@@ -1,0 +1,74 @@
+@import "./css/reset.css";
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Science+Gothic:wght@100..900&display=swap');
+
+body{
+  background: $black;
+  color: $white;
+  font-family: 'Manrope', sans-serif;
+}
+
+.base{
+  &_title{
+    color: $white;
+    &.centered{
+      text-align: center;
+    }
+    &-header{
+      text-align: center;
+    }
+  }
+  &_link{
+    color: inherit;
+    text-decoration: none;
+    &.hovered{
+      &:hover{
+        text-decoration: underline;
+      }
+    }
+  }
+  &_input{
+    width: 100%;
+    outline: none;
+    border: none;
+    box-sizing: border-box;
+  }
+  &_title{
+    margin-left: 24px;
+  }
+  &_image{
+    object-fit: contain;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+}
+
+.input_wide{
+  background: none;
+  border: none;
+  outline: none;
+  color: $white;
+  width: 100%;
+  padding-right: 5px;
+}
+
+.btn_submit{
+  width: 100%;
+  border-radius: 12px;
+  background: $white;
+  color: $black;
+  font-family: 'Manrope', sans-serif;
+  font-weight: bold;
+  height: 50px;
+  font-size: 17px;
+}
+
+.clickable{
+  cursor: pointer;
+}
+.inv_input{
+    visibility: hidden;
+    position: absolute;
+  }
