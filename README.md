@@ -41,7 +41,7 @@ npm run build
 
 
 ## License
-This project is licensed under the MIT License. See [LICENSE](https://github.com/av3rgun/ffmpeg-builder/LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](https://raw.githubusercontent.com/av3r6un/ffmpeg-builder/refs/heads/master/LICENSE) for details.
 
 
 ## Contributing
