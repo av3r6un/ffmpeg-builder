@@ -1,7 +1,7 @@
 <template>
   <article class="app">
     <div class="app_logo">
-      <img src="/favicon-128.png" alt="logo" class="base_image"
+      <img src="/ffmpeg-builder/favicon-128.png" alt="logo" class="base_image"
         title="ffmpeg-builder"/>
     </div>
     <Settings :watcher="watcher" />
