@@ -1,10 +1,10 @@
 <template>
   <article class="app">
     <div class="app_logo">
-      <img src="/ffmpeg-builder/favicon-128.png" alt="logo" class="base_image"
+      <img :src="`${path}favicon-128.png`" alt="logo" class="base_image"
         title="ffmpeg-builder"/>
     </div>
-    <Settings :watcher="watcher" />
+    <Settings :watcher="watcher" @changed="settingChange"/>
     <div class="app_body">
       <div class="app_section">
         <div class="app_section-title"><h3 class="base_title">Название</h3></div>
@@ -51,6 +51,8 @@
               placeholder="Выберите источник"/>
             <Selection :options="languages.all" nested v-model:selected="s.language"
               placeholder="Выберите язык" rType="object"/>
+            <Checkbox :checked="s.apply_headers" @change:value="(n) => toggleApplyHeaders(idx, n)"
+              label="Заголовки" small />
             <div class="app_section-row__add" @click="addNewSource"  v-if="idx == 0">
               <FAI icon="fa-solid fa-plus" />
             </div>
@@ -124,10 +126,13 @@ import Selection from './components/Selection.vue';
 import FFmpegService from './services/ffmpeg.service';
 import Watcher from './services/watcher.service';
 import Settings from './components/Settings.vue';
+import Checkbox from './components/CheckBox.vue';
 
 export default {
   name: 'App',
-  components: { Input, Selection, Settings },
+  components: {
+    Input, Selection, Settings, Checkbox,
+  },
   data() {
     return {
       fs: new FFmpegService(),
@@ -185,6 +190,7 @@ export default {
         sources: [{
           source_type: null,
           language: null,
+          apply_headers: false,
           url: null,
         }],
         codecs: [{
@@ -209,7 +215,9 @@ export default {
       this.form.headers.splice(idx, 1);
     },
     addNewSource() {
-      this.form.sources.push({ source_type: null, language: null, url: null });
+      this.form.sources.push({
+        source_type: null, language: null, url: null, apply_headers: false,
+      });
     },
     removeAddedSource(idx) {
       this.form.sources.splice(idx, 1);
@@ -237,6 +245,14 @@ export default {
         navigator.clipboard.writeText(text);
       }
     },
+    toggleApplyHeaders(idx, value) {
+      this.form.sources[idx].apply_headers = value;
+    },
+    settingChange(name, value) {
+      if (name === 'usePowershell') {
+        this.form.shell = value ? 'powershell' : 'cmd';
+      }
+    },
   },
   computed: {
     sourcesCounted() {
@@ -253,6 +269,9 @@ export default {
     codecsTypes() {
       return this.sourceTypes.filter((v) => Object.keys(v)[0] !== 'combined');
     },
+    path() {
+      return process.env.ASSET_PATH;
+    },
   },
   watch: {
     form: {
@@ -261,6 +280,9 @@ export default {
         this.watcher.handleFormChange(val);
       },
     },
+  },
+  mounted() {
+    this.form.shell = this.$store.getters.usePowerShell ? 'powershell' : 'cmd';
   },
 };
 </script>

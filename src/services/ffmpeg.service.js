@@ -1,15 +1,20 @@
 class FFmpegService {
   msg = null;
 
-  buildHeaders(headers = []) {
+  userAgent = navigator.userAgent;
+
+  buildHeaders(headers = [], url = null, wrap = false) {
     let string = '';
     headers.forEach((h) => {
       if (h.key !== null && h.value !== null) {
-        string += (`${h.key}: ${h.value}\`r\`n`);
+        string += `${h.key}: ${h.value}\`r\`n`;
       }
     });
-    this.msg = '';
-    return headers.length > 1 ? ` -headers "${string}"` : '';
+    string += `User-Agent: ${this.userAgent}\`r\`n`;
+    let headerString = `-headers "${string}"`;
+    if (url) string += `Host: ${new URL(url).host}\`r\`n`;
+    if (wrap) headerString = `-headers \\"${string}\\"`;
+    return headerString;
   }
 
   buildArgs(args = []) {
@@ -25,14 +30,17 @@ class FFmpegService {
     return simpleArgs.join(' ');
   }
 
-  buildSources(args = []) {
-    if (args.length < 1 && (Object.values(args)[0] === null || Object.keys(args)[0] === 0)) return '';
-    const sources = [];
-    args.forEach((s) => {
-      if (s.url) sources.push(`-i ${s.url}`);
+  buildSources(headers, sources, wrap) {
+    const inputs = [];
+    if (!Object.values(sources).some((s) => s?.url)) return '';
+    sources.forEach((s) => {
+      let headerString = '';
+      if (s.apply_headers) {
+        headerString = `${this.buildHeaders(headers, s.url, wrap)} `;
+      }
+      inputs.push(`${headerString}-i ${s.url}`);
     });
-    this.msg = '';
-    return sources;
+    return inputs.length > 1 ? inputs.join(' ') : '';
   }
 
   buildCodecs(args = []) {
@@ -45,9 +53,10 @@ class FFmpegService {
     return codecs.length > 1 ? codecs.join(' ') : '';
   }
 
-  buildMeta(title, sources) {
+  buildMeta(title, sources, wrap) {
     const meta = [];
-    if (title) meta.push(`-metadata title=\\"${title}\\"`);
+    const wrapped = wrap ? `\\"${title}\\"` : `"${title}"`;
+    if (title) meta.push(`-metadata title=${wrapped}`);
     sources.forEach((s) => {
       Object.entries(s.language).forEach(([k, v]) => {
         if (k !== 'none') {
@@ -66,8 +75,8 @@ class FFmpegService {
   }
 
   buildMaps(args) {
-    if (args.length < 1 && (Object.values(args)[0] === null || Object.keys(args)[0] === 0)) return '';
     const maps = [];
+    if (!Object.values(args).some((s) => s?.url)) return '';
     args.forEach((s, idx) => {
       if (s.source_type === 'combined') {
         maps.push(`-map ${idx}:v`);
@@ -82,25 +91,23 @@ class FFmpegService {
 
   build(args) {
     let finalString = 'ffmpeg';
-    console.log(args);
-    const headers = this.buildHeaders(args.headers);
-    const sources = this.buildSources(args.sources);
+    const wrap = args?.shell === 'cmd';
+    const sources = this.buildSources(args.headers, args.sources, wrap);
     const globalArgs = this.buildArgs(args.global_args);
     const codecs = this.buildCodecs(args.codecs);
     const meta = this.buildMeta(args.metatitle, args.sources);
     const maps = this.buildMaps(args.sources);
-    console.log(headers, globalArgs, sources, codecs, meta);
 
     finalString += ` ${globalArgs}`;
-    finalString += sources.map((s) => `${headers} ${s}`).join('');
+    finalString += ` ${sources}`;
     finalString += ` ${maps}`;
     finalString += ` ${codecs}`;
     finalString += ` ${meta}`;
-    finalString += ` ${args.filename}`;
+    finalString += ` ${args.filename || ''}`;
 
-    console.log(finalString);
+    console.log(finalString.trim());
 
-    return `powershell -Command "${finalString}"`;
+    return wrap ? `powershell -Command "${finalString}"` : finalString;
   }
 }
 

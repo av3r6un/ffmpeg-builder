@@ -1,5 +1,5 @@
 <template>
-  <div class="checkbox" @click="toggle" :class="{ labeled: label }">
+  <div class="checkbox" @click="toggle" :class="{ labeled: label, small: small }">
     <div class="checkbox_checkbox"
       :class="{ checked: localCheck }">
       <input type="checkbox" class="checkbox_check inv_input"
@@ -31,6 +31,10 @@ export default {
         return `input-${Math.random().toString(36).substr(2, 9)}`;
       },
     },
+    small: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['change:value'],
   methods: {
@@ -51,6 +55,13 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+  &.small{
+    flex-direction: column-reverse;
+    gap: 3px;
+    .checkbox_label{
+      font-size: 12px;
+    }
+  }
   &_label{
     font-size: 16px;
     font-weight: normal;

@@ -116,12 +116,13 @@ export default {
   &.selected{
     .selection_default{
       position: absolute;
-      top: -13px;
+      top: -8px;
       font-size: 11px;
-      width: 100%;
+      width: calc(100% - 20px);
+      height: calc(100% - 10px);
       color: rgba($color: $white, $alpha: .5);
       &.selected{
-        top: 2px;
+        top: 8px;
         font-size: 16px !important;
         color: $white;
       }

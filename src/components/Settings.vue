@@ -7,6 +7,8 @@
       <div class="settings_row">
         <Checkbox label="Автоподстановка" :checked="$store.getters.autocomplete"
           @change:value="(n) => settingChange('changeAC', n)" />
+        <Checkbox label="Оболочка powershell" :checked="$store.getters.usePowerShell"
+          @change:value="(n) => settingChange('usePowershell', n)" />
       </div>
     </div>
   </article>
@@ -36,6 +38,7 @@ export default {
     settingChange(setting, state) {
       this.$store.commit(setting, state);
       this.watcherState = state;
+      this.$emit('changed', setting, state);
     },
   },
   mounted() {
@@ -44,5 +47,10 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
+.settings{
+  &_row{
+    display: flex;
+    gap: 10px;
+  }
+}
 </style>
