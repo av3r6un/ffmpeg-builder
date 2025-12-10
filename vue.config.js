@@ -1,7 +1,7 @@
 const { defineConfig } = require('@vue/cli-service');
 const webpack = require('webpack');
 
-const ASSET_PATH = process.env.NODE_ENV === 'production' ? '/ffmpeg-builder' : '/';
+const ASSET_PATH = process.env.NODE_ENV === 'production' ? '/ffmpeg-builder/' : '/';
 
 module.exports = defineConfig({
   transpileDependencies: true,

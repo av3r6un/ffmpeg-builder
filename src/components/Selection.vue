@@ -179,8 +179,6 @@ export default {
       }
     }
   }
-  &_option{
-  }
   &_default{
     z-index: 1;
     display: flex;
